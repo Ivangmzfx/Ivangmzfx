@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda - Tu Nombre</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fafafa;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        nav {
+            padding: 1rem 0;
+            background: rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        .nav-links a.active {
+            background: rgba(255,255,255,0.2);
+        }
+        .nav-links a.disabled {
+            opacity: 0.3;
+            text-decoration: line-through;
+            cursor: not-allowed;
+        }
+
+        /* Cart in navigation */
+        .cart-nav {
+            background: rgba(255,255,255,0.15);
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .cart-nav:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-2px);
+        }
+
+        .cart-count {
+            display: inline-block;
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            text-align: center;
+            line-height: 20px;
+            font-size: 0.75rem;
+        }
+
+        /* Page Header */
+        .page-header {
+            padding: 4rem 2rem 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .page-header-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .page-header h1 {
+            font-size: 3rem;
+            font-weight: 300;
+            margin-bottom: 1rem;
+            animation: fadeInUp 1s ease;
+        }
+
+        .page-header .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+
+        .back-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            text-decoration: none;
+            padding: 0.8rem 1.5rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+
+        .back-home:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateX(-5px);
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .section {
+            padding: 4rem 0;
+        }
+
+        /* Categories Filter */
+        .categories {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .category-btn {
+            padding: 0.8rem 1.5rem;
+            background: white;
+            border: 2px solid #2c3e50;
+            color: #2c3e50;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            border: none;
+            outline: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .category-btn:hover {
+            background: #34495e;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(44, 62, 80, 0.3);
+        }
+
+        .category-btn.active {
+            background: #2c3e50 !important;
+            color: white !important;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(44, 62, 80, 0.3);
+        }
+
+        /* Products Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+        }
+
+        .product-card.hidden {
+            display: none;
+        }
+
+        .product-card.filtering {
+            transition: all 0.3s ease;
+            transform: scale(0.95);
+            opacity: 0.7;
+        }
+
+        .product-image {
+            height: 220px;
+            background: linear-gradient(45deg, #f0f2f5, #e1e8ed);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .product-card:hover .product-image::before {
+            left: 100%;
+        }
+
+        .product-info {
+            padding: 1.5rem;
+        }
+
+        .product-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .product-description {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .product-category {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: #2c3e50;
+            color: white;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .product-price {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #27ae60;
+            margin-bottom: 1rem;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .add-to-cart {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .add-to-cart:hover {
+            background: #34495e;
+            transform: translateY(-2px);
+        }
+
+        .quick-view-btn {
+            padding: 0.8rem 1rem;
+            background: transparent;
+            color: #2c3e50;
+            border: 2px solid #2c3e50;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+        }
+
+        .quick-view-btn:hover {
+            background: #2c3e50;
+            color: white;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            animation: slideUp 0.3s ease;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .cart-items {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .cart-total {
+            font-size: 1.3rem;
+            font-weight: bold;
+            text-align: center;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 1rem;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .checkout-btn:hover {
+            background: #2ecc71;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #27ae60;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 1001;
+            animation: slideInRight 0.3s ease;
+        }
+
+        /* Footer */
+        footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .empty-cart {
+            text-align: center;
+            color: #666;
+            padding: 2rem;
+        }
+
+        .cart-item-details {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .cart-item-price {
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .remove-item {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background 0.3s ease;
+        }
+
+        .remove-item:hover {
+            background: #c0392b;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .categories {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .modal-content {
+                margin: 5% auto;
+                width: 95%;
+            }
+
+            .product-actions {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .cart-nav {
+                order: -1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="nav-container">
+                <div class="logo">IvanGMZ</div>
+                <ul class="nav-links">
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="portfolio.html" class="disabled">Portafolio</a></li>
+                    <li><a href="shop.html" class="active">Tienda</a></li>
+                    <li>
+                        <div class="cart-nav" onclick="openCartModal()">
+                            🛒 <span id="cartCount">0</span> - $<span id="cartTotal">0</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="page-header">
+            <div class="page-header-content">
+                <a href="index.html" class="back-home">
+                    ← Volver al inicio
+                </a>
+                <h1>Mi Tienda</h1>
+                <p class="subtitle">Ropa, accesorios, detailing y más</p>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="section">
+            <div class="container">
+                <div class="categories">
+                    <button class="category-btn active" data-category="todos">Todos</button>
+                    <button class="category-btn" data-category="ropa">Ropa</button>
+                    <button class="category-btn" data-category="accesorios">Accesorios</button>
+                    <button class="category-btn" data-category="detailing">Detailing</button>
+                    <button class="category-btn" data-category="calcos">Calcos</button>
+                </div>
+
+                <div class="products-grid">
+                    <!-- Ropa -->
+                    <div class="product-card" data-category="ropa">
+                        <div class="product-image">
+                            <img src="clothes/remera-jdm.jpg" alt="Remera JDM">
+                            <span>Remera JDM Style</span>
+                        </div>
+                        <div class="product-info">
+                            <div class="product-category">Ropa</div>
+                            <h3 class="product-title">Remera JDM Classic</h3>
+                            <p class="product-description">Remera 100% algodón con diseño exclusivo JDM. Disponible en varios colores y talles.</p>
+                            <div class="product-price">$15.000</div>
+                            <div class="product-actions">
+                                <button class="add-to-cart" onclick="addToCart('Remera JDM Classic', 15000)">Agregar</button>
+                                <button class="quick-view-btn" onclick="openQuickView('Remera JDM Classic', 'Remera de alta calidad con diseño exclusivo JDM. Material 100% algodón premium, estampado resistente al lavado.', 15000)">Ver</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="product-card" data-category="ropa">
+                        <div class="product-image">
+                            <img src="clothes/hoodie-drift-king.jpg" alt="Hoodie Drift King">
+                            <span>Hoodie Drift King</span>
+                        </div>
+                        <div class="product-info">
+                            <div class="product-category">Ropa</div>
+                            <h3 class="product-title">Hoodie Drift King</h3>
+                            <p class="product-description">Buzo con capucha, diseño drift exclusivo, tela de primera calidad.</p>
+                            <div class="product-price">$35.000</div>
+                            <div class="product-actions">
+                                <button class="add-to-cart" onclick="addToCart('Hoodie Drift King', 35000)">Agregar</button>
+                                <button class="quick-view-btn" onclick="openQuickView('Hoodie Drift King', 'Hoodie premium con diseño drift exclusivo. Tela polar de alta calidad, bolsillo canguro y capucha ajustable.', 35000)">Ver</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Accesorios Auto -->
+                    <div class="product-card" data-category="accesorios-auto">
+                        <div class="product-image">
+                            <img src="accessories/shift-knob-titanium.jpg" alt="Shift Knob Titanio">
+                            <span>Shift Knob Titanio</span>
+                        </div>
+                        <div class="product-info">
+                            <div class="product-category">Accesorios Auto</div>
+                            <h3 class="product-title">Perilla de Cambio Titanio</h3>
+                            <p class="product-description">Perilla de cambio en titanio anodizado, rosca universal M10x1.5 y M12x1.25.</p>
+                            <div class="product-price">$25.000</div>
+                            <div class="product-actions">
+                                <button class="add-to-cart" onclick="addToCart('Perilla de Cambio Titanio', 25000)">Agregar</button>
+                                <button class="quick-view-btn" onclick="openQuickView('Perilla de Cambio Titanio', 'Perilla de cambio premium en titanio anodizado. Peso optimizado para mejor sensación. Incluye adaptadores para diferentes roscas.', 25000)">Ver</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="product-card" data-category="accesorios-auto">
+                        <div class="product-image">
+                            <img src="accessories/steering-wheel-racing.jpg" alt="Volante Racing">
+                            <span>Volante Racing</span>
+                        </div>
+                        <div class="product-info">
+                            <div class="product-category">Accesorios Auto</div>
+                            <h3 class="product-title">Volante Racing 350mm</h3>
+                            <p class="product-description">Volante deportivo de 350mm, cuero sintético, con logo grabado.</p>
+                            <div class="product-price">$45.000</div>
+                            <div class="product-actions">
+                                <button class="add-to-cart" onclick="addToCart('Volante Racing 350mm', 45000)">Agregar</button>
+                                <button class="quick-view-btn" onclick="openQuickView('Volante Racing 350mm', 'Volante deportivo profesional de 350mm. Cuero sintético de alta calidad, agarres anatómicos y logo grabado láser.', 45000)">Ver</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Productos Detailing -->
+                    <div class="product-card" data-category="detailing">
+                        <div class="product-image">
+                            <img src="detailing/cera-premium.jpg" alt="Cera Premium">
+                            <span>Cera Premium</span>
+                        </div>
+                        <div class="product-info">
+                            <div class="product-category">Detailing</div>
+                            <h3 class="product-title">Cera de Carnauba Premium</h3>
+                            <p class="product-description">Cera 100% carnauba brasileña, protección superior y brillo profundo.</p>
+                            <div class="product-price">$18.000</div>
+                            <div class="product-actions">
+                                <button class="add-to-cart" onclick="addToCart('Cera de Carnauba Premium', 18000)">Agregar</button>
+                                <button class="quick-view-btn" onclick="openQuickView('Cera de Carnauba Premium', 'Cera premium 100% carnauba brasileña. Proporciona protección UV superior y brillo profundo duradero. Fácil aplicación.', 18000)">Ver</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="product-card" data-category="detailing">
+                        <div class="product-image">
+                            <img src="detailing/kit-microfiber.jpg" alt="Kit Microfiber">
+                            <span>Kit Microfiber</span>
+                        </div>
+                        <div class="product-info">
+                            <div class="product-category">Detailing</div>
+                            <h3 class="product-title">Kit Paños Microfibra</h3>
+                            <p class="product-description">Set de 5 paños de microfibra premium, diferentes gramajes y usos.</p>
+                            <div class="product-price">$12.000</div>
+                            <div class="product-actions">
+                                <button class="add-to-cart" onclick="addToCart('Kit Paños Microfibra', 12000)">Agregar</button>
+                                <button class="quick-view-btn" onclick="openQuickView('Kit Paños Microfibra', 'Set de 5 paños de microfibra premium. Diferentes gramajes: lavado, secado, cristales, interior y aplicación de ceras.', 12000)">Ver</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stickers -->
+                    <div class="product-card" data-category="stickers">
+                        <div class="product-image">
+                            <img src="stickers/pack-jdm.jpg" alt="Pack Stickers JDM">
+                            <span>Pack Stickers JDM</span>
+                        </div>
+                        <div class="product-info">
+                            <div class="product-category">Stickers</div>
+                            <h3 class="product-title">Pack Stickers JDM</h3>
+                            <p class="product-description">Pack de 20 stickers JDM variados, resistentes al agua y UV.</p>
+                            <div class="product-price">$8.000</div>
+                            <div class="product-actions">
+                                <button class="add-to-cart" onclick="addToCart('Pack Stickers JDM', 8000)">Agregar</button>
+                                <button class="quick-view-btn" onclick="openQuickView('Pack Stickers JDM', 'Pack de 20 stickers JDM únicos. Material vinyl premium resistente al agua, UV y lavado. Diseños exclusivos.', 8000)">Ver</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="product-card" data-category="stickers">
+                        <div class="product-image">
+                            <img src="stickers/sticker-personalizado.jpg" alt="Nombre">
+                            <span>Sticker Personalizado</span>
+                        </div>
+                        <div class="product-info">
+                            <div class="product-category">Stickers</div>
+                            <h3 class="product-title">Sticker Personalizado</h3>
+                            <p class="product-description">Sticker personalizado con tu diseño, hasta 30cm, vinyl premium.</p>
+                            <div class="product-price">$5.000</div>
+                            <div class="product-actions">
+                                <button class="add-to-cart" onclick="addToCart('Sticker Personalizado', 5000)">Agregar</button>
+                                <button class="quick-view-btn" onclick="openQuickView('Sticker Personalizado', 'Sticker completamente personalizable con tu diseño. Hasta 30cm en cualquier dirección. Material vinyl premium de larga duración.', 5000)">Ver</button>
+                            </div>
+                        </div>
+                    </div>
+
+   <!-- Quick View Modal -->
+    <div id="quickViewModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeQuickView()">&times;</span>
+            <h2 id="modalProductTitle">Título del Producto</h2>
+            <p id="modalProductDescription">Descripción del producto...</p>
+            <div style="margin: 1rem 0;">
+                <strong>Precio: $<span id="modalProductPrice">0</span></strong>
+            </div>
+            <button class="add-to-cart" id="modalAddToCart" style="width: 100%;">Agregar al Carrito</button>
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div id="cartModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeCartModal()">&times;</span>
+            <h2>Tu Carrito de Compras</h2>
+            <div class="cart-items" id="cartItems">
+                <!-- Cart items will be added here -->
+            </div>
+            <div class="cart-total">
+                Total: $<span id="modalCartTotal">0</span>
+            </div>
+            <button class="checkout-btn" onclick="checkout()">Proceder al Pago</button>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 IvanGMZ - Técnico en Diseño y Animación Digital</p>
+            <p>Los mejores productos para tu auto.</p>
+    <script>
+        // Shopping cart functionality
+        let cart = [];
+
+        // Función para agregar productos al carrito
+        function addToCart(name, price) {
+            // Verificar si el producto ya existe en el carrito
+            const existingItem = cart.find(item => item.name === name);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    name: name,
+                    price: price,
+                    quantity: 1
+                });
+            }
+            
+            updateCartDisplay();
+            showNotification(`${name} agregado al carrito!`);
+        }
+
+        // Función para actualizar la visualización del carrito
+        function updateCartDisplay() {
+            const cartCount = document.getElementById('cartCount');
+            const cartTotal = document.getElementById('cartTotal');
+            const modalCartTotal = document.getElementById('modalCartTotal');
+            
+            // Calcular totales
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            // Actualizar elementos del DOM
+            cartCount.textContent = totalItems;
+            cartTotal.textContent = totalPrice.toLocaleString();
+            if (modalCartTotal) {
+                modalCartTotal.textContent = totalPrice.toLocaleString();
+            }
+        }
+
+        // Función para mostrar notificaciones
+        function showNotification(message) {
+            // Remover notificación existente si la hay
+            const existingNotification = document.querySelector('.notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+
+            // Crear nueva notificación
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // Remover después de 3 segundos
+            setTimeout(() => {
+                notification.style.animation = 'fadeOut 0.3s ease';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.remove();
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Función para abrir el modal del carrito
+        function openCartModal() {
+            const modal = document.getElementById('cartModal');
+            const cartItems = document.getElementById('cartItems');
+            
+            // Limpiar contenido anterior
+            cartItems.innerHTML = '';
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<div class="empty-cart">Tu carrito está vacío</div>';
+            } else {
+                cart.forEach((item, index) => {
+                    const cartItem = document.createElement('div');
+                    cartItem.className = 'cart-item';
+                    cartItem.innerHTML = `
+                        <div class="cart-item-details">
+                            <div class="cart-item-name">${item.name}</div>
+                            <div class="cart-item-price">${item.price.toLocaleString()} x ${item.quantity}</div>
+                        </div>
+                        <button class="remove-item" onclick="removeFromCart(${index})">Eliminar</button>
+                    `;
+                    cartItems.appendChild(cartItem);
+                });
+            }
+            
+            updateCartDisplay();
+            modal.style.display = 'block';
+        }
+
+        // Función para cerrar el modal del carrito
+        function closeCartModal() {
+            const modal = document.getElementById('cartModal');
+            modal.style.display = 'none';
+        }
+
+        // Función para eliminar items del carrito
+        function removeFromCart(index) {
+            const removedItem = cart[index];
+            cart.splice(index, 1);
+            updateCartDisplay();
+            showNotification(`${removedItem.name} eliminado del carrito`);
+            
+            // Reabrir el modal para mostrar cambios
+            openCartModal();
+        }
+
+        // Función para el checkout
+        function checkout() {
+            if (cart.length === 0) {
+                showNotification('Tu carrito está vacío');
+                return;
+            }
+            
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const itemsList = cart.map(item => `${item.name} (x${item.quantity})`).join(', ');
+            
+            // Simular proceso de checkout
+            showNotification('Redirigiendo al proceso de pago...');
+            
+            // Aquí podrías integrar con un sistema de pagos real
+            setTimeout(() => {
+                alert(`¡Gracias por tu compra!\n\nProductos: ${itemsList}\nTotal: ${total.toLocaleString()}\n\nEn un sitio real, esto te redirigiría al sistema de pagos.`);
+                
+                // Limpiar carrito después del "pago"
+                cart = [];
+                updateCartDisplay();
+                closeCartModal();
+            }, 1500);
+        }
+
+        // Función para abrir vista rápida de productos
+        function openQuickView(name, description, price) {
+            const modal = document.getElementById('quickViewModal');
+            const title = document.getElementById('modalProductTitle');
+            const desc = document.getElementById('modalProductDescription');
+            const priceEl = document.getElementById('modalProductPrice');
+            const addBtn = document.getElementById('modalAddToCart');
+            
+            title.textContent = name;
+            desc.textContent = description;
+            priceEl.textContent = price.toLocaleString();
+            
+            // Actualizar el botón de agregar al carrito
+            addBtn.onclick = () => {
+                addToCart(name, price);
+                closeQuickView();
+            };
+            
+            modal.style.display = 'block';
+        }
+
+        // Función para cerrar vista rápida
+        function closeQuickView() {
+            const modal = document.getElementById('quickViewModal');
+            modal.style.display = 'none';
+        }
+
+        // Filter functionality
+        function initializeFilters() {
+            const categoryBtns = document.querySelectorAll('.category-btn');
+            const productCards = document.querySelectorAll('.product-card');
+
+            categoryBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    
+                    // Remover clase active de TODOS los botones
+                    categoryBtns.forEach(b => {
+                        b.classList.remove('active');
+                        b.style.background = '';
+                        b.style.color = '';
+                    });
+                    
+                    // Agregar clase active solo al botón clickeado
+                    btn.classList.add('active');
+                    
+                    const category = btn.dataset.category;
+
+                    // Primero agregar clase filtering para animación
+                    productCards.forEach(card => {
+                        card.classList.add('filtering');
+                    });
+
+                    // Después de un breve delay, filtrar y reorganizar
+                    setTimeout(() => {
+                        productCards.forEach((card) => {
+                            card.classList.remove('filtering');
+                            
+                            if (category === 'todos' || card.dataset.category === category) {
+                                card.classList.remove('hidden');
+                                card.style.display = 'block';
+                            } else {
+                                card.classList.add('hidden');
+                                card.style.display = 'none';
+                            }
+                        });
+
+                        // Forzar el reflow del grid para que se reorganice automáticamente
+                        const grid = document.querySelector('.products-grid');
+                        grid.style.display = 'none';
+                        grid.offsetHeight; // Trigger reflow
+                        grid.style.display = 'grid';
+
+                    }, 150);
+                });
+            });
+        }
+
+        // Cerrar modales al hacer clic fuera de ellos
+        window.onclick = function(event) {
+            const cartModal = document.getElementById('cartModal');
+            const quickViewModal = document.getElementById('quickViewModal');
+            
+            if (event.target === cartModal) {
+                closeCartModal();
+            }
+            if (event.target === quickViewModal) {
+                closeQuickView();
+            }
+        }
+
+        // Cerrar modales con la tecla Escape
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeCartModal();
+                closeQuickView();
+            }
+        });
+
+        // Inicializar todo cuando se carga la página
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCartDisplay();
+            initializeFilters(); // Inicializar los filtros
+        });
+    </script>
+</body>
+</html>
